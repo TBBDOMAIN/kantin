@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Customize Running Text</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { background: #eef2f3; padding: 30px 15px; font-family: 'Poppins', sans-serif; }
+        .admin-card { max-width: 650px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        .emoji-btn { border: 1px solid #ddd; background: #f9f9f9; padding: 5px 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 1.2rem; }
+        .emoji-btn:hover { background: #e2e2e2; transform: scale(1.1); }
+        .color-preview { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+    <div class="admin-card">
+        <h3 class="text-center mb-4"><i class="bi bi-gear-fill text-primary"></i> Customizer Running Text</h3>
+        
+        <div class="mb-3">
+            <label class="form-label fw-bold">Isi Pengumuman:</label>
+            <textarea id="text-input" class="form-control" rows="3" placeholder="Ketik pengumuman di sini..."></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label class="small text-muted d-block mb-2">Klik untuk tambah emoticon:</label>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="emoji-btn" onclick="addEmoji('📢')">📢</span>
+                <span class="emoji-btn" onclick="addEmoji('🍲')">🍲</span>
+                <span class="emoji-btn" onclick="addEmoji('🥤')">🥤</span>
+                <span class="emoji-btn" onclick="addEmoji('🔥')">🔥</span>
+                <span class="emoji-btn" onclick="addEmoji('✅')">✅</span>
+                <span class="emoji-btn" onclick="addEmoji('⚠️')">⚠️</span>
+                <span class="emoji-btn" onclick="addEmoji('🎉')">🎉</span>
+                <span class="emoji-btn" onclick="addEmoji('✨')">✨</span>
+                <span class="emoji-btn" onclick="addEmoji('🌴')">🌴</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Warna Teks:</label>
+                <div class="d-flex align-items-center gap-2">
+                    <input type="color" id="color-input" class="form-control form-control-color" value="#00f2fe" title="Pilih warna teks">
+                    <span class="small text-muted">Pilih Warna</span>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Gaya Tulisan (Font):</label>
+                <select id="font-input" class="form-select">
+                    <option value="'Poppins', sans-serif">Poppins (Modern)</option>
+                    <option value="'Courier New', Courier, monospace">Typewriter (Klasik)</option>
+                    <option value="'Arial', sans-serif">Arial (Clean)</option>
+                    <option value="'Times New Roman', serif">Serif (Formal)</option>
+                    <option value="cursive">Cursive (Santai)</option>
+                </select>
+            </div>
+        </div>
+
+        <hr>
+        
+        <button class="btn btn-primary w-100 py-3 fw-bold shadow" onclick="saveSettings()">
+            <i class="bi bi-cloud-arrow-up-fill me-2"></i> UPDATE LAYAR UTAMA
+        </button>
+    </div>
+
+    <script>
+        // Load settings yang tersimpan saat dibuka
+        window.onload = () => {
+            const settings = JSON.parse(localStorage.getItem("runningTextSettings")) || {};
+            if (settings.text) document.getElementById('text-input').value = settings.text;
+            if (settings.color) document.getElementById('color-input').value = settings.color;
+            if (settings.font) document.getElementById('font-input').value = settings.font;
+        };
+
+        function addEmoji(emoji) {
+            const input = document.getElementById('text-input');
+            input.value += emoji;
+            input.focus();
+        }
+function saveSettings() {
+    const text = document.getElementById('text-input').value;
+    const color = document.getElementById('color-input').value;
+    const font = document.getElementById('font-input').value;
+    const DB_URL = "https://kantin-tbb-default-rtdb.asia-southeast1.firebasedatabase.app/:.json";
+    if (text.trim() === "") {
+        Swal.fire('Oops', 'Teks tidak boleh kosong', 'warning');
+        return;
+    }
+
+    const settings = {
+        text: text, // Ini akan membawa emoticon yang kamu masukkan
+        color: color,
+        font: font
+    };
+
+    // Simpan ke LocalStorage agar bisa dibaca halaman scanner
+    localStorage.setItem("runningTextSettings", JSON.stringify(settings));
+    
+    // Trigger event untuk browser yang sama
+    window.dispatchEvent(new Event('storage'));
+
+    Swal.fire({
+        icon: 'success',
+        title: 'Update Berhasil!',
+        text: 'Emoticon dan warna sudah dikirim ke layar utama.',
+        timer: 1500,
+        showConfirmButton: false
+    });
+}
+        
+    </script>
+</body>
+</html>
